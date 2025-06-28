@@ -1,0 +1,16 @@
+{% extends "jobinfo_application/base.html" %}
+
+{% block content %}
+  {% if form.instance.pk %}
+    <h2>応募情報の編集</h2>
+  {% else %}
+    <h2>応募情報の新規登録</h2>
+  {% endif %}
+  <hr>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">保存</button>
+    <a href="{% if form.instance.pk %}{% url 'application-detail' form.instance.pk %}{% else %}{% url 'application-list' %}{% endif %}" class="btn btn-secondary">キャンセル</a>
+  </form>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "jobinfo_application/base.html" %}
+
+{% block content %}
+<div class="text-center">
+  <h2>ログアウトしました</h2>
+  <p>ご利用いただきありがとうございました。</p>
+  <a href="{% url 'login' %}" class="btn btn-primary">再度ログインする</a>
+</div>
+{% endblock %}

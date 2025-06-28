@@ -1,0 +1,38 @@
+{% extends "jobinfo_application/base.html" %}
+
+{% block content %}
+  <h2>今後の予定</h2>
+  {% if upcoming_events %}
+    <ul class="list-group mb-4">
+      {% for event in upcoming_events %}
+        <li class="list-group-item">
+          {{ event.next_action_date|date:"Y/m/d" }} -
+          <a href="{% url 'application-detail' event.pk %}">{{ event.company_name }}</a>:
+          {{ event.next_action }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>今後の予定はありません。</p>
+  {% endif %}
+
+  <div class="d-flex justify-content-between align-items-center">
+    <h2>応募一覧</h2>
+    <a href="{% url 'application-create' %}" class="btn btn-primary">＋ 新規登録</a>
+  </div>
+  <hr>
+  <div class="list-group">
+    {% for application in applications %}
+      <a href="{% url 'application-detail' application.pk %}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ application.company_name }}</h5>
+          <small>{{ application.applied_at|date:"Y/m/d" }}</small>
+        </div>
+        <p class="mb-1">{{ application.job_title }}</p>
+        <small>ステータス: <span class="badge bg-secondary">{{ application.get_status_display }}</span></small>
+      </a>
+    {% empty %}
+      <p>まだ応募情報がありません。</p>
+    {% endfor %}
+  </div>
+{% endblock %}

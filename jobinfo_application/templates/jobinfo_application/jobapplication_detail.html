@@ -1,0 +1,53 @@
+{% extends "jobinfo_application/base.html" %}
+
+{% block content %}
+  <h2 class="mb-3">{{ application.company_name }} <small class="text-muted fs-5">- {{ application.job_title }}</small></h2>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h4>応募情報</h4>
+      <table class="table">
+        <tr><th>ステータス</th><td>{{ application.get_status_display }}</td></tr>
+        <tr><th>次のアクション</th><td>{{ application.next_action|default:"-" }}</td></tr>
+        <tr><th>アクション日付</th><td>{{ application.next_action_date|date:"Y/m/d"|default:"-" }}</td></tr>
+        <tr><th>備考</th><td>{{ application.notes|linebreaksbr|default:"-" }}</td></tr>
+      </table>
+      <a href="{% url 'application-update' application.pk %}" class="btn btn-secondary">編集</a>
+      <a href="{% url 'application-delete' application.pk %}" class="btn btn-danger">削除</a>
+      <hr class="my-4">
+      <h4>関連書類</h4>
+      <ul>
+      {% for doc in documents %}
+        <li><a href="{{ doc.uploaded_file.url }}" target="_blank">{{ doc.name }}</a></li>
+      {% empty %}
+        <li>書類はありません。</li>
+      {% endfor %}
+      </ul>
+      <form action="{% url 'add-document' application.pk %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ document_form.as_p }}
+        <button type="submit" class="btn btn-primary btn-sm">書類をアップロード</button>
+      </form>
+    </div>
+    <div class="col-md-6">
+      <h4>AI 志望動機ドラフト作成</h4>
+      <form action="{% url 'generate-draft' application.pk %}" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label"><b>求人情報 (ここに貼り付け)</b></label>
+          <p class="form-text bg-light p-2 border rounded">{{ application.job_description|linebreaksbr|default:"求人情報を編集ページで登録してください。" }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="user_skills" class="form-label"><b>あなたのスキル・経歴</b></label>
+          <textarea name="user_skills" id="user_skills" class="form-control" rows="5">{{ submitted_skills }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-success">ドラフトを生成</button>
+      </form>
+      {% if generated_text %}
+        <hr class="my-4">
+        <h4>生成されたドラフト</h4>
+        <div class="card"><div class="card-body bg-light">{{ generated_text|linebreaksbr }}</div></div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
