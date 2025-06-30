@@ -3,6 +3,28 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    skills = models.TextField(
+        blank=True, 
+        verbose_name="スキル・資格",
+        help_text="プログラミング言語、フレームワーク、保有資格などを自由にご記入ください。"
+    )
+    experience = models.TextField(
+        blank=True, 
+        verbose_name="職務経歴・学業経験",
+        help_text="これまでであなたが注力したことなどを具体的に記述してください。"
+    )
+    self_pr = models.TextField(
+        blank=True,
+        verbose_name="自己PR",
+        help_text="あなたの強みや、仕事に対する価値観などを自由にご記入ください。"
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+    
 class JobApplication(models.Model):
     STATUS_CHOICES = [('検討中', '応募検討中'), ('応募済', '書類応募済'), ('選考中', '選考中'), ('内定', '内定'), ('見送り', '見送り')]
     user = models.ForeignKey(User, on_delete=models.CASCADE)

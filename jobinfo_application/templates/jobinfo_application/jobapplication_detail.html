@@ -30,18 +30,22 @@
       </form>
     </div>
     <div class="col-md-6">
-      <h4>AI 志望動機ドラフト作成</h4>
+      <h4>AI 志望動機ドラフト作成</h4>   
+      <div class="mb-3">
+        <label class="form-label"><b>分析対象の求人情報</b></label>
+        <div class="form-text bg-light p-2 border rounded" style="max-height: 150px; overflow-y: auto;">
+          {{ application.job_description|linebreaksbr|default:"求人情報が登録されていません。" }}
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label"><b>ベースとなるあなたのプロフィール情報</b> (<a href="{% url 'profile-edit' %}">編集</a>)</label>
+        <div class="form-text bg-light p-2 border rounded" style="max-height: 150px; overflow-y: auto;">
+          {{ user_info_for_display|linebreaksbr|default:"プロフィールが登録されていません。" }}
+        </div>
+      </div>
       <form action="{% url 'generate-draft' application.pk %}" method="post">
         {% csrf_token %}
-        <div class="mb-3">
-          <label class="form-label"><b>求人情報 (ここに貼り付け)</b></label>
-          <p class="form-text bg-light p-2 border rounded">{{ application.job_description|linebreaksbr|default:"求人情報を編集ページで登録してください。" }}</p>
-        </div>
-        <div class="mb-3">
-          <label for="user_skills" class="form-label"><b>あなたのスキル・経歴</b></label>
-          <textarea name="user_skills" id="user_skills" class="form-control" rows="5">{{ submitted_skills }}</textarea>
-        </div>
-        <button type="submit" class="btn btn-success">ドラフトを生成</button>
+        <button type="submit" class="btn btn-success">この内容でドラフトを生成</button>
       </form>
       {% if generated_text %}
         <hr class="my-4">

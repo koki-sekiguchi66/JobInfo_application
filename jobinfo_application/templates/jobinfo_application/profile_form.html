@@ -1,0 +1,13 @@
+{% extends "jobinfo_application/base.html" %}
+
+{% block content %}
+  <h2>プロフィールの編集</h2>
+  <p class="text-muted">登録した情報は、AIが志望動機を生成する際に利用されます。</p>
+  <hr>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">保存する</button>
+    <a href="{% url 'application-list' %}" class="btn btn-secondary">キャンセル</a>
+  </form>
+{% endblock %}

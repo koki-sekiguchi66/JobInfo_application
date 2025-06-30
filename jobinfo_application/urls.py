@@ -10,4 +10,5 @@ urlpatterns = [
     path('application/<int:pk>/delete/', views.application_delete, name='application-delete'),
     path('application/<int:pk>/add_document/', views.add_document, name='add-document'),
     path('application/<int:pk>/generate_draft/', views.generate_draft_view, name='generate-draft'),
+    path('profile/', views.profile_edit_view, name='profile-edit')
 ]

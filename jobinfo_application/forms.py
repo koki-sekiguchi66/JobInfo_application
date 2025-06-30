@@ -2,9 +2,9 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import JobApplication, Document
+from .models import UserProfile
 
 class SignUpForm(UserCreationForm):
-
     email = forms.EmailField(
         label="メールアドレス",
         help_text="パスワードリセットなどに使用します。"
@@ -24,3 +24,8 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['name', 'uploaded_file']
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['skills', 'experience', 'self_pr']
