@@ -8,17 +8,17 @@ class UserProfile(models.Model):
     skills = models.TextField(
         blank=True, 
         verbose_name="スキル・資格",
-        help_text="プログラミング言語、フレームワーク、保有資格などを自由にご記入ください。"
+        help_text="プログラミング言語、フレームワーク、保有資格など記入してください。"
     )
     experience = models.TextField(
         blank=True, 
         verbose_name="職務経歴・学業経験",
-        help_text="これまでであなたが注力したことなどを具体的に記述してください。"
+        help_text="これまでであなたが注力したことを具体的に記入してください。"
     )
     self_pr = models.TextField(
         blank=True,
         verbose_name="自己PR",
-        help_text="あなたの強みや、仕事に対する価値観などを自由にご記入ください。"
+        help_text="あなたの強みや、仕事に対する価値観を記入してください。"
     )
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -37,21 +37,21 @@ class JobApplication(models.Model):
     blank=True, 
     null=True, 
     verbose_name="次のタスク",
-    help_text="例：面接日程の調整メール返信, Webテスト受験など" 
+    help_text="例：面接,グループディスカッション、Webテスト受験など" 
 )
     
     next_action_date = models.DateField(
     blank=True, 
     null=True, 
     verbose_name="タスクの期日/予定日", 
-    help_text="面接の日付や、タスクの締切日などを入力します。" 
+    help_text="面接の日付や、提出物の締切日などを入力します。" 
 )
 
     job_description = models.TextField(
     blank=True, 
     null=True, 
     verbose_name="求人情報",  
-    help_text="ここに求人情報をコピー＆ペーストすると、AIによる志望動機作成支援機能が利用できます。"
+    help_text="ここに企業の求める人物像などをコピー＆ペーストすると、AIによる志望動機作成支援機能が利用できます。"
     )
 
     notes = models.TextField(blank=True, null=True, verbose_name="備考")
@@ -67,7 +67,7 @@ class JobApplication(models.Model):
 
 class Document(models.Model):
     job_application = models.ForeignKey(JobApplication, related_name='documents', on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, verbose_name="書類名（例：職務経歴書_v2）")
+    name = models.CharField(max_length=255, verbose_name="書類名（例：エントリーシート_v1など）")
     uploaded_file = models.FileField(upload_to='documents/%Y/%m/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     def __str__(self): 

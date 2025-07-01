@@ -18,14 +18,32 @@ class JobApplicationForm(forms.ModelForm):
     class Meta:
         model = JobApplication
         fields = ['company_name', 'job_title', 'status', 'next_action', 'next_action_date', 'job_description', 'notes']
-        widgets = {'next_action_date': forms.DateInput(attrs={'type': 'date'})}
+        widgets = {
+            'company_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'job_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'next_action': forms.TextInput(attrs={'class': 'form-control'}),
+            'next_action_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'job_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
 
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['name', 'uploaded_file']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'uploaded_file': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['skills', 'experience', 'self_pr']
+        widgets = {
+            'skills': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'experience': forms.Textarea(attrs={'class': 'form-control', 'rows': 8}),
+            'self_pr': forms.Textarea(attrs={'class': 'form-control', 'rows': 8}),
+        }

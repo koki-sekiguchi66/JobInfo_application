@@ -2,11 +2,36 @@
 
 {% block content %}
   <h2>プロフィールの編集</h2>
-  <p class="text-muted">登録した情報は、AIが志望動機を生成する際に利用されます。</p>
+  <p class="text-muted">ここに登録したスキルや経歴は、AIが志望動機を生成する際のベース情報として利用されます。</p>
   <hr>
+  
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+
+    {% for field in form %}
+      <div class="mb-4"> 
+        
+        
+        <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+        
+      
+        {{ field }}
+        
+        
+        {% if field.errors %}
+          <div class="alert alert-danger mt-1 p-2">
+            {{ field.errors.as_text }}
+          </div>
+        {% endif %}
+        
+      
+        {% if field.help_text %}
+          <div class="form-text mt-1">{{ field.help_text }}</div>
+        {% endif %}
+        
+      </div>
+    {% endfor %}
+    
     <button type="submit" class="btn btn-primary">保存する</button>
     <a href="{% url 'application-list' %}" class="btn btn-secondary">キャンセル</a>
   </form>

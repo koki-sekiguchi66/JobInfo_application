@@ -3,14 +3,38 @@
 {% block content %}
   {% if form.instance.pk %}
     <h2>応募情報の編集</h2>
+    <p class="text-muted">{{ form.instance.company_name }} - {{ form.instance.job_title }}</p>
   {% else %}
     <h2>応募情報の新規登録</h2>
   {% endif %}
   <hr>
-  <form method="post" enctype="multipart/form-data">
+  <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">保存</button>
+
+    {% for field in form %}
+      <div class="mb-4">
+        <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+        
+        {{ field }}
+        
+        {% if field.errors %}
+          <div class="invalid-feedback d-block mt-1">
+            {% for error in field.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% if field.help_text %}
+          <div class="form-text mt-1">
+            {{ field.help_text|safe }}
+          </div>
+        {% endif %}
+        
+      </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-primary px-4">保存</button>
+
     <a href="{% if form.instance.pk %}{% url 'application-detail' form.instance.pk %}{% else %}{% url 'application-list' %}{% endif %}" class="btn btn-secondary">キャンセル</a>
   </form>
 {% endblock %}
