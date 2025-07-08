@@ -1,3 +1,8 @@
+addons:
+#SendGridの設定
+  - plan: free 
+    type: sendgrid
+
 services:
 # PostgreSQLの設定
   - type: psql
