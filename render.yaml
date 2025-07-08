@@ -1,0 +1,28 @@
+services:
+# PostgreSQLの設定
+  - type: psql
+    name: jobinfodb 
+    env: postgres
+    plan: free 
+    postgresMajorVersion: 14
+
+#Djangoの設定
+  - type: web
+    name: jobinfo-management 
+    env: python
+    plan: free 
+    buildCommand: "./build.sh"
+
+    startCommand: "gunicorn JobInfo_management.wsgi"
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: psql
+          name: jobinfodb 
+          property: connectionString 
+      - key: SECRET_KEY
+        generateValue: true 
+      - key: OPENAI_API_KEY
+        sync: false 
+      - key: WEB_CONCURRENCY
+        value: 4
