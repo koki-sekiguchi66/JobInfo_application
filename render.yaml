@@ -1,7 +1,7 @@
 services:
 # PostgreSQLの設定
   - type: psql
-    name: jobinfodb 
+    name: jobinfo_database
     env: postgres
     plan: free 
     postgresMajorVersion: 14
@@ -18,7 +18,7 @@ services:
       - key: DATABASE_URL
         fromService:
           type: psql
-          name: jobinfodb 
+          name: jobinfo_database
           property: connectionString 
       - key: SECRET_KEY
         generateValue: true 
