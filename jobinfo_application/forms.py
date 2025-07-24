@@ -14,10 +14,22 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ('username', 'email')
 
+
 class JobApplicationForm(forms.ModelForm):
+    job_types_input = forms.CharField(
+        required=False,
+        label="職種カテゴリ",
+        help_text="カンマ区切りで入力してください。（例: バックエンド, フロントエンド）"
+    )
+
     class Meta:
         model = JobApplication
-        fields = ['company_name', 'job_title', 'status', 'next_action', 'next_action_date', 'job_description', 'notes']
+        fields = [
+            'company_name', 'job_title', 'status', 'job_types_input',
+            'corporate_philosophy', 'ideal_candidate', 'job_description',
+            'next_action', 'next_action_date', 'notes'
+        ]
+        
         widgets = {
             'company_name': forms.TextInput(attrs={'class': 'form-control'}),
             'job_title': forms.TextInput(attrs={'class': 'form-control'}),
@@ -27,6 +39,7 @@ class JobApplicationForm(forms.ModelForm):
             'job_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
 
 class DocumentForm(forms.ModelForm):
     class Meta:

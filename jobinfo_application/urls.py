@@ -2,9 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('api/search-company/', views.search_company_view, name='search-company'),
+    path('api/search-jobtypes/', views.search_jobtype_view, name='search-jobtype'),
     path('accounts/signup/', views.signup_view, name='signup'),
-    
-    # path('accounts/', include('django.contrib.auth.urls')), 
     path('', views.application_list, name='application-list'),
     path('application/<int:pk>/', views.application_detail, name='application-detail'),
     path('application/new/', views.application_create, name='application-create'),
