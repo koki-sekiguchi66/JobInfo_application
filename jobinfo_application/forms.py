@@ -37,15 +37,14 @@ class JobApplicationForm(forms.ModelForm):
             'next_action', 'next_action_date', 'notes'
         ]
 
-        widgets = {
-            'company_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'job_title': forms.TextInput(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
-            'next_action': forms.TextInput(attrs={'class': 'form-control'}),
-            'next_action_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'job_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        }
+        def __init__(self, *args, **kwargs):
+            """
+            フォームの初期化
+            """
+            super().__init__(*args, **kwargs)
+            if self.instance and self.instance.pk:
+                self.fields['job_types_input'].initial = ', '.join([job.name for job in self.instance.job_types.all()])
+
 
 
 class DocumentForm(forms.ModelForm):
