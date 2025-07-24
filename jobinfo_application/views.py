@@ -1,13 +1,22 @@
 import requests
 import xml.etree.ElementTree as ET
+
 from django.http import JsonResponse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login 
+from django.contrib import messages
 from .models import JobApplication, Document, UserProfile, JobType
 from .forms import JobApplicationForm, DocumentForm, SignUpForm, UserProfileForm 
 from django.utils import timezone
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.template.loader import render_to_string
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMessage
+from django.contrib.auth import get_user_model
 
 import openai
 
@@ -18,12 +27,43 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user) 
-            return redirect('application-list') 
+            current_site = get_current_site(request)
+            subject = 'アカウント有効化のご案内'
+            message = render_to_string('registration/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            })
+
+            email = EmailMessage(subject, message, to=[user.email])
+            email.send()
+            
+            return redirect('account_activation_sent')
     else:
         form = SignUpForm()
-    
     return render(request, 'registration/signup.html', {'form': form})
+
+def activate_view(request, uidb64, token):
+    """メール内のリンククリックでアカウントを有効化するビュー"""
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        messages.success(request, 'アカウントが有効化されました！')
+        return redirect('application-list')
+    else:
+        return render(request, 'registration/account_activation_invalid.html')
+
+def account_activation_sent_view(request):
+    return render(request, 'registration/account_activation_sent.html')
 
 
 @login_required

@@ -1,8 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import JobApplication, Document
-from .models import UserProfile
+from .models import JobApplication, Document, UserProfile, JobType
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
@@ -13,6 +12,14 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email')
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_active = False
+        if commit:
+            user.save()
+        return user
+
 
 
 class JobApplicationForm(forms.ModelForm):
@@ -29,7 +36,7 @@ class JobApplicationForm(forms.ModelForm):
             'corporate_philosophy', 'ideal_candidate', 'job_description',
             'next_action', 'next_action_date', 'notes'
         ]
-        
+
         widgets = {
             'company_name': forms.TextInput(attrs={'class': 'form-control'}),
             'job_title': forms.TextInput(attrs={'class': 'form-control'}),
