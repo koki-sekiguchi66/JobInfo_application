@@ -1,0 +1,14 @@
+{% extends "jobinfo_application/base.html" %}
+
+{% block content %}
+  <h2>面接ログの削除</h2>
+  <hr>
+  <p>本当に「{{ log.stage }} ({{ log.interview_date|date:"Y/m/d" }})」のログを削除しますか？</p>
+  <p>この操作は元に戻せません。</p>
+  
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">はい、削除します</button>
+    <a href="{% url 'application-detail' log.job_application.pk %}" class="btn btn-secondary">キャンセル</a>
+  </form>
+{% endblock %}

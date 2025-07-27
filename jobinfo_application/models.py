@@ -12,7 +12,7 @@ class UserProfile(models.Model):
     )
     experience = models.TextField(
         blank=True, 
-        verbose_name="職務経歴・学業経験",
+        verbose_name="職務経歴・学業経験・開発経験",
         help_text="これまでであなたが注力したことを具体的に記入してください。"
     )
     self_pr = models.TextField(
@@ -77,7 +77,7 @@ class JobApplication(models.Model):
                         )
     
 
-    notes = models.TextField(blank=True, null=True, verbose_name="備考")
+    notes = models.TextField(blank=True, null=True, verbose_name="その他")
     applied_at = models.DateTimeField(auto_now_add=True, verbose_name="登録日")
 
 
@@ -86,11 +86,35 @@ class JobApplication(models.Model):
     
     def get_absolute_url(self): 
         return reverse('application-detail', kwargs={'pk': self.pk})
-    
+
+
+class InterviewLog(models.Model):
+    """面接の記録を管理するモデル"""
+    job_application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='interview_logs')
+    stage = models.CharField(max_length=100, verbose_name="選考段階", help_text="例: 一次面接, 最終面接")
+    interview_date = models.DateField(verbose_name="実施日")
+    questions_asked = models.TextField(blank=True, verbose_name="質問された内容")
+    self_evaluation = models.TextField(blank=True, verbose_name="自己評価・感想")
+    next_steps = models.TextField(blank=True, verbose_name="次のステップ・連絡事項")
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        ordering = ['-interview_date']
+    def __str__(self): return f"{self.job_application.company_name} - {self.stage}"
+
+
+class EntrySheet(models.Model):
+    """ESの設問と回答を管理するモデル"""
+    job_application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='entry_sheets')
+    question = models.TextField(verbose_name="設問内容")
+    answer = models.TextField(blank=True, verbose_name="回答")
+    ai_draft = models.TextField(blank=True, verbose_name="AIによるドラフト")
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self): return f"{self.job_application.company_name} - {self.question[:30]}..."
+
 
 class Document(models.Model):
     job_application = models.ForeignKey(JobApplication, related_name='documents', on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, verbose_name="書類名（例：エントリーシート_v1など）")
+    name = models.CharField(max_length=255, verbose_name="書類名")
     uploaded_file = models.FileField(upload_to='documents/%Y/%m/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     def __str__(self): 

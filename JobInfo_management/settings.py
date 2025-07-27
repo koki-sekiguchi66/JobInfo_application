@@ -110,6 +110,7 @@ LOGIN_REDIRECT_URL = 'application-list'
 LOGOUT_REDIRECT_URL = 'application-list'
 
 # パスワードリセット用のメール設定
+
 if DEBUG is False:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = env('EMAIL_HOST')
@@ -122,4 +123,8 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
+
 OPENAI_API_KEY = env('OPENAI_API_KEY')
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

@@ -1,57 +1,81 @@
 {% extends "jobinfo_application/base.html" %}
 
 {% block content %}
-  <h2 class="mb-3">{{ application.company_name }} <small class="text-muted fs-5">- {{ application.job_title }}</small></h2>
+  <h2 class="mb-3">{{ job_application.company_name }} <small class="text-muted fs-5">- {{ job_application.job_title }}</small></h2>
 
   <div class="row">
     <div class="col-md-6">
       <h4>応募情報</h4>
       <table class="table">
-        <tr><th>ステータス</th><td>{{ application.get_status_display }}</td></tr>
-        <tr><th>次のアクション</th><td>{{ application.next_action|default:"-" }}</td></tr>
-        <tr><th>アクション日付</th><td>{{ application.next_action_date|date:"Y/m/d"|default:"-" }}</td></tr>
-        <tr><th>備考</th><td>{{ application.notes|linebreaksbr|default:"-" }}</td></tr>
+        <tr><th>ステータス</th><td>{{ job_application.get_status_display }}</td></tr>
+        <tr><th>次のアクション</th><td>{{ job_application.next_action|default:"-" }}</td></tr>
+        <tr><th>アクション日付</th><td>{{ job_application.next_action_date|date:"Y/m/d"|default:"-" }}</td></tr>
+        <tr><th>備考</th><td>{{ job_application.notes|linebreaksbr|default:"-" }}</td></tr>
       </table>
-      <a href="{% url 'application-update' application.pk %}" class="btn btn-secondary">編集</a>
-      <a href="{% url 'application-delete' application.pk %}" class="btn btn-danger">削除</a>
+      <a href="{% url 'application-update' job_application.pk %}" class="btn btn-secondary">編集</a>
+      <a href="{% url 'application-delete' job_application.pk %}" class="btn btn-danger">削除</a>
       <hr class="my-4">
       <h4>関連書類</h4>
       <ul>
-      {% for doc in documents %}
-        <li><a href="{{ doc.uploaded_file.url }}" target="_blank">{{ doc.name }}</a></li>
-      {% empty %}
-        <li>書類はありません。</li>
-      {% endfor %}
+        {% for doc in job_application.documents.all %}
+          <li><a href="{{ doc.uploaded_file.url }}" target="_blank">{{ doc.name }}</a></li>
+        {% empty %}
+          <li>書類はありません。</li>
+        {% endfor %}
       </ul>
-      <form action="{% url 'add-document' application.pk %}" method="post" enctype="multipart/form-data">
+      <form action="{% url 'add-document' job_application.pk %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ document_form.as_p }}
         <button type="submit" class="btn btn-primary btn-sm">書類をアップロード</button>
       </form>
     </div>
+  </div>
+
+  <hr class="my-5">
+
+  <div class="row">
+    {# 面接ログ #}
     <div class="col-md-6">
-      <h4>AI 志望動機ドラフト作成</h4>   
-      <div class="mb-3">
-        <label class="form-label"><b>分析対象の求人情報</b></label>
-        <div class="form-text bg-light p-2 border rounded" style="max-height: 150px; overflow-y: auto;">
-          {{ application.job_description|linebreaksbr|default:"求人情報が登録されていません。" }}
-        </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>面接ログ</h4>
+        <a href="{% url 'interview-log-create' job_application.pk %}" class="btn btn-outline-primary btn-sm">＋ ログを追加</a>
       </div>
-      <div class="mb-3">
-        <label class="form-label"><b>ベースとなるあなたのプロフィール情報</b> (<a href="{% url 'profile-edit' %}">編集</a>)</label>
-        <div class="form-text bg-light p-2 border rounded" style="max-height: 150px; overflow-y: auto;">
-          {{ user_info_for_display|linebreaksbr|default:"プロフィールが登録されていません。" }}
+      {% for log in job_application.interview_logs.all %}
+        <div class="card mb-2">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <h5 class="card-title">{{ log.stage }}</h5>
+                <div>
+                  <a href="{% url 'interview-log-update' log.pk %}" class="btn btn-sm btn-outline-secondary">編集</a>
+                  <a href="{% url 'interview-log-delete' log.pk %}" class="btn btn-sm btn-outline-danger">削除</a>
+                </div>
+            </div>
+            <h6 class="card-subtitle mb-2 text-muted">{{ log.interview_date|date:"Y/m/d" }}</h6>
+            <p class="card-text"><strong>質問内容:</strong> {{ log.questions_asked|linebreaksbr }}</p>
+            <p class="card-text"><strong>自己評価:</strong> {{ log.self_evaluation|linebreaksbr }}</p>
+          </div>
         </div>
+      {% empty %}
+        <p>まだ面接の記録はありません。</p>
+      {% endfor %}
+    </div>
+
+    {# ES作成支援 #}
+    <div class="col-md-6">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>ES設問・回答</h4>
+        
       </div>
-      <form action="{% url 'generate-draft' application.pk %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-success">この内容でドラフトを生成</button>
-      </form>
-      {% if generated_text %}
-        <hr class="my-4">
-        <h4>生成されたドラフト</h4>
-        <div class="card"><div class="card-body bg-light">{{ generated_text|linebreaksbr }}</div></div>
-      {% endif %}
+      <a href="{% url 'es-question-create' job_application.pk %}" class="btn btn-outline-primary btn-sm mb-2">＋ 設問を追加</a>
+      <div class="list-group">
+        {% for es in job_application.entry_sheets.all %}
+          <a href="{% url 'es-detail' es.pk %}" class="list-group-item list-group-item-action">
+            {{ es.question|truncatechars:50 }}
+          </a>
+        {% empty %}
+          <p>まだESの設問が登録されていません。</p>
+        {% endfor %}
+      </div>
     </div>
   </div>
 {% endblock %}

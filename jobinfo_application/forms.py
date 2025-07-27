@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import JobApplication, Document, UserProfile, JobType
+from .models import JobApplication, Document, UserProfile, InterviewLog, EntrySheet
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
@@ -12,14 +12,6 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email')
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.is_active = False
-        if commit:
-            user.save()
-        return user
-
 
 
 class JobApplicationForm(forms.ModelForm):
@@ -37,6 +29,10 @@ class JobApplicationForm(forms.ModelForm):
             'next_action', 'next_action_date', 'notes'
         ]
 
+        widgets = {
+            'next_action_date': forms.DateInput(attrs={'type': 'date'})
+        }
+
         def __init__(self, *args, **kwargs):
             """
             フォームの初期化
@@ -45,6 +41,27 @@ class JobApplicationForm(forms.ModelForm):
             if self.instance and self.instance.pk:
                 self.fields['job_types_input'].initial = ', '.join([job.name for job in self.instance.job_types.all()])
 
+
+class InterviewLogForm(forms.ModelForm):
+    """面接ログを登録・編集するためのフォーム"""
+    class Meta:
+        model = InterviewLog
+        fields = ['stage', 'interview_date', 'questions_asked', 'self_evaluation', 'next_steps']
+        widgets = {
+            'interview_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+class EntrySheetQuestionForm(forms.ModelForm):
+    """ESの設問を入力するためのフォーム"""
+    class Meta:
+        model = EntrySheet
+        fields = ['question']
+
+class EntrySheetAnswerForm(forms.ModelForm):
+    """ESの回答を編集するためのフォーム"""
+    class Meta:
+        model = EntrySheet
+        fields = ['answer']
 
 
 class DocumentForm(forms.ModelForm):

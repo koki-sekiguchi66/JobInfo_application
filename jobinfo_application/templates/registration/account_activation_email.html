@@ -1,9 +1,0 @@
-{% autoescape off %}
-こんにちは、{{ user.username }}さん
-
-以下のリンクをクリックして、アカウントの有効化を完了してください。
-
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
-
-もしこのメールに心当たりがない場合は、お手数ですが無視してください。
-{% endautoescape %}
