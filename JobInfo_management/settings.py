@@ -65,11 +65,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'JobInfo_management.wsgi.application'
 
 
+# settings.py
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=env('DATABASE_URL')
+        default=env('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
     )
 }
+
+
+if 'DATABASE_URL' in os.environ:
+    print(f"Database engine: {DATABASES['default']['ENGINE']}")
+    print(f"Database name: {DATABASES['default']['NAME']}")
+else:
+    print("WARNING: DATABASE_URL not found in environment variables")
 
 
 
