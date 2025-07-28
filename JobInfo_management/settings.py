@@ -7,11 +7,14 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+try:
+    environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+except:
+    pass
 
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG', default=False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
@@ -119,3 +122,26 @@ OPENAI_API_KEY = env('OPENAI_API_KEY')
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# settings.py の最後に追加（本番環境での一時的なデバッグ用）
+if not DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': False,
+            },
+        },
+    }
